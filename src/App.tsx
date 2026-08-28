@@ -96,6 +96,10 @@ export default function App() {
           setCurrentTab('community');
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
+        onOpenComparison={() => {
+          setCurrentTab('comparison');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
         onOpenRiskModal={() => setIsRiskOpen(true)}
         onOpenApiStatusModal={() => setIsApiStatusOpen(true)}
         onOpenLegalModal={() => setIsRiskOpen(true)}

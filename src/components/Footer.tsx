@@ -8,6 +8,7 @@ interface FooterProps {
   onOpenRiskModal?: () => void;
   onOpenApiStatusModal?: () => void;
   onOpenCommunity?: () => void;
+  onOpenComparison?: () => void;
   onOpenLegalModal?: (title: string, type: 'privacy' | 'terms') => void;
 }
 
@@ -17,6 +18,7 @@ export const Footer: React.FC<FooterProps> = ({
   onOpenRiskModal,
   onOpenApiStatusModal,
   onOpenCommunity,
+  onOpenComparison,
   onOpenLegalModal,
 }) => {
   const isLight = userSettings?.theme === 'light';
@@ -63,12 +65,6 @@ export const Footer: React.FC<FooterProps> = ({
             Community Forum
           </button>
           <button
-            onClick={onOpenCommunity}
-            className="text-[#ddc1ae]/80 hover:text-[#ffb77d] transition-colors opacity-90 hover:opacity-100 cursor-pointer"
-          >
-            Community Forum
-          </button>
-          <button
             onClick={onOpenRiskModal}
             className="hover:text-[#ff8c00] transition-colors cursor-pointer"
           >
@@ -85,6 +81,12 @@ export const Footer: React.FC<FooterProps> = ({
             className="hover:text-[#ff8c00] transition-colors cursor-pointer"
           >
             Terms of Service
+          </button>
+          <button
+            onClick={onOpenComparison}
+            className="text-[#ff8c00]/90 hover:text-[#ff8c00] hover:underline transition-all cursor-pointer font-semibold flex items-center gap-1"
+          >
+            <span>Before vs After</span>
           </button>
           <button
             onClick={onOpenApiStatusModal}

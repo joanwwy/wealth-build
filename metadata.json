@@ -2,5 +2,7 @@
   "name": "WealthBuilder",
   "description": "High-precision financial intelligence and portfolio simulation engine with deterministic algorithms and Monte Carlo forecasting.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

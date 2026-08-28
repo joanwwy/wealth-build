@@ -205,12 +205,12 @@ export const UnifiedEngineScreen: React.FC<UnifiedEngineScreenProps> = ({
   return (
     <div className={`flex-grow w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 pt-20 pb-16 flex flex-col gap-8 transition-colors duration-200`}>
       
-      {/* 1. Interactive Simulation Controls & How to Use Guide Side-by-Side */}
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      {/* 1. Interactive Simulation Controls & How to Use Guide Side-by-Side (Matched Height) */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
         {/* Left Side: Interactive Simulation Controls (lg:col-span-7) */}
         <div
-          className={`lg:col-span-7 rounded-xl border p-6 shadow-lg transition-all flex flex-col justify-between ${
+          className={`lg:col-span-7 rounded-xl border p-6 shadow-lg transition-all flex flex-col justify-between h-full ${
             isLight ? 'bg-white border-slate-200 text-slate-900' : 'bg-[#1e2023] border-[#414754] text-[#f3dfd1]'
           }`}
         >
@@ -498,11 +498,11 @@ export const UnifiedEngineScreen: React.FC<UnifiedEngineScreenProps> = ({
 
         {/* Right Side: Step-by-Step "How to Use" Instructions Guide Card (lg:col-span-5) */}
         <div
-          className={`lg:col-span-5 rounded-xl border p-6 shadow-md transition-all flex flex-col justify-between ${
+          className={`lg:col-span-5 rounded-xl border p-6 shadow-md transition-all flex flex-col justify-between h-full ${
             isLight ? 'bg-white border-slate-200 text-slate-900' : 'bg-[#1e2023] border-[#414754] text-[#f3dfd1]'
           }`}
         >
-          <div>
+          <div className="flex flex-col flex-1 justify-between">
             <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-[#414754]">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-500">
@@ -522,9 +522,9 @@ export const UnifiedEngineScreen: React.FC<UnifiedEngineScreenProps> = ({
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2.5 mt-3.5">
+            <div className="grid grid-cols-1 gap-3 my-3.5 flex-1 justify-between">
               {/* Step 1 */}
-              <div className={`p-2.5 rounded-lg border flex items-start gap-2.5 ${
+              <div className={`p-3 rounded-lg border flex items-start gap-3 ${
                 isLight ? 'bg-slate-50 border-slate-200' : 'bg-[#150c06]/40 border-[#414754]/60'
               }`}>
                 <span className="w-5 h-5 shrink-0 rounded-full bg-[#ff8c00] text-slate-950 font-bold text-[11px] flex items-center justify-center font-mono mt-0.5">
@@ -535,13 +535,13 @@ export const UnifiedEngineScreen: React.FC<UnifiedEngineScreenProps> = ({
                     Set Starting Capital &amp; Monthly Deposit
                   </h4>
                   <p className={`text-[11px] leading-snug mt-0.5 ${isLight ? 'text-slate-600' : 'text-[#ddc1ae]/80'}`}>
-                    Input current lump-sum portfolio balance and the ongoing monthly savings you plan to deposit.
+                    Input current lump-sum portfolio balance and ongoing monthly savings deposits.
                   </p>
                 </div>
               </div>
 
               {/* Step 2 */}
-              <div className={`p-2.5 rounded-lg border flex items-start gap-2.5 ${
+              <div className={`p-3 rounded-lg border flex items-start gap-3 ${
                 isLight ? 'bg-slate-50 border-slate-200' : 'bg-[#150c06]/40 border-[#414754]/60'
               }`}>
                 <span className="w-5 h-5 shrink-0 rounded-full bg-[#ff8c00] text-slate-950 font-bold text-[11px] flex items-center justify-center font-mono mt-0.5">
@@ -552,13 +552,13 @@ export const UnifiedEngineScreen: React.FC<UnifiedEngineScreenProps> = ({
                     Select Asset Allocation Strategy
                   </h4>
                   <p className={`text-[11px] leading-snug mt-0.5 ${isLight ? 'text-slate-600' : 'text-[#ddc1ae]/80'}`}>
-                    Choose an asset strategy (S&P 500, Tech Tilt, 60/40, or All-Weather) or pick a 1-click Quick Scenario.
+                    Choose an asset strategy (S&P 500, Tech Tilt, 60/40, All-Weather) or pick a 1-click preset.
                   </p>
                 </div>
               </div>
 
               {/* Step 3 */}
-              <div className={`p-2.5 rounded-lg border flex items-start gap-2.5 ${
+              <div className={`p-3 rounded-lg border flex items-start gap-3 ${
                 isLight ? 'bg-slate-50 border-slate-200' : 'bg-[#150c06]/40 border-[#414754]/60'
               }`}>
                 <span className="w-5 h-5 shrink-0 rounded-full bg-[#ff8c00] text-slate-950 font-bold text-[11px] flex items-center justify-center font-mono mt-0.5">
@@ -569,13 +569,13 @@ export const UnifiedEngineScreen: React.FC<UnifiedEngineScreenProps> = ({
                     Adjust Time Horizon Slider
                   </h4>
                   <p className={`text-[11px] leading-snug mt-0.5 ${isLight ? 'text-slate-600' : 'text-[#ddc1ae]/80'}`}>
-                    Slide horizon (1 to 45 yrs) to observe exponential compounding and see at what age you hit milestones.
+                    Slide horizon (1 to 45 yrs) to calculate milestone age and compound growth.
                   </p>
                 </div>
               </div>
 
               {/* Step 4 */}
-              <div className={`p-2.5 rounded-lg border flex items-start gap-2.5 ${
+              <div className={`p-3 rounded-lg border flex items-start gap-3 ${
                 isLight ? 'bg-slate-50 border-slate-200' : 'bg-[#150c06]/40 border-[#414754]/60'
               }`}>
                 <span className="w-5 h-5 shrink-0 rounded-full bg-[#ff8c00] text-slate-950 font-bold text-[11px] flex items-center justify-center font-mono mt-0.5">
@@ -586,7 +586,7 @@ export const UnifiedEngineScreen: React.FC<UnifiedEngineScreenProps> = ({
                     Compare 2 Portfolios &amp; Export
                   </h4>
                   <p className={`text-[11px] leading-snug mt-0.5 ${isLight ? 'text-slate-600' : 'text-[#ddc1ae]/80'}`}>
-                    Click <strong>"Compare 2 Strategies"</strong> to isolate alpha deltas, and click <strong>"Export Report"</strong> to download.
+                    Click <strong>"Compare 2 Strategies"</strong> to isolate alpha deltas, and <strong>"Export Report"</strong> to download.
                   </p>
                 </div>
               </div>

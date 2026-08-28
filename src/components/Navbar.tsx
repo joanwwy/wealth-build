@@ -87,7 +87,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span className="font-bold tracking-tight">WealthBuilder</span>
             </button>
 
-            {/* Streamlined Tab Navigation */}
+            {/* Streamlined 2-Tab Navigation */}
             <div className="hidden sm:flex items-center gap-1 h-16">
               <button
                 onClick={() => onTabChange('simulator')}
@@ -104,25 +104,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <Sliders className="w-4 h-4" />
                 <span>Simulator &amp; Analytics</span>
                 {currentTab === 'simulator' && (
-                  <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#ff8c00] shadow-[0_0_8px_#ff8c00]" />
-                )}
-              </button>
-
-              <button
-                onClick={() => onTabChange('comparison')}
-                className={`font-medium text-xs sm:text-sm transition-all px-3 py-2 rounded h-full flex items-center gap-1.5 relative cursor-pointer ${
-                  currentTab === 'comparison'
-                    ? isLight
-                      ? 'text-[#ff8c00] font-bold'
-                      : 'text-[#ffb77d] font-bold'
-                    : isLight
-                    ? 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                    : 'text-[#ddc1ae]/80 hover:text-[#f3dfd1] hover:bg-[#37393d]/30'
-                }`}
-              >
-                <GitCompare className="w-4 h-4" />
-                <span>Before vs After</span>
-                {currentTab === 'comparison' && (
                   <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#ff8c00] shadow-[0_0_8px_#ff8c00]" />
                 )}
               </button>
