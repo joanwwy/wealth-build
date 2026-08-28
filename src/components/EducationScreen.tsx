@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Terminal, TrendingUp, Network, Database, Cpu, Copy, Check, Play, Activity, Layers, Server } from 'lucide-react';
+import { Terminal, TrendingUp, Network, Database, Cpu, Copy, Check, Play, Activity, Layers, Server, MessageSquare } from 'lucide-react';
 import { calculateCompoundGrowth, formatCurrency } from '../utils/simulationEngine';
+import { DisqusComments } from './DisqusComments';
 
 export const EducationScreen: React.FC = () => {
   const [copiedCode, setCopiedCode] = useState(false);
@@ -545,6 +546,13 @@ export const EducationScreen: React.FC = () => {
                 )}
               </div>
             </section>
+
+            {/* Section 4: Quantitative Engineering Discussions */}
+            <DisqusComments
+              identifier="wealth-builder-engineering-docs"
+              title="WealthBuilder System Architecture & Mathematics"
+              categoryName="Architecture, Rust SIMD Engine & Methodology Q&A"
+            />
           </div>
         </div>
       </div>

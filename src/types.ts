@@ -1,4 +1,4 @@
-export type TabType = 'dashboard' | 'simulator' | 'education' | 'history';
+export type TabType = 'dashboard' | 'simulator' | 'education' | 'history' | 'community';
 
 export type AssetClassType = 
   | 'S&P 500 (100% Equity)'

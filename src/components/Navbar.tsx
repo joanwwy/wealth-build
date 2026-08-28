@@ -120,6 +120,20 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#ffb77d] shadow-[0_0_8px_#ff8c00]" />
                 )}
               </button>
+
+              <button
+                onClick={() => onTabChange('community')}
+                className={`font-medium text-sm transition-all px-3 py-2 rounded h-full flex items-center relative cursor-pointer ${
+                  currentTab === 'community'
+                    ? 'text-[#ffb77d]'
+                    : 'text-[#ddc1ae]/80 hover:text-[#f3dfd1] hover:bg-[#37393d]/30'
+                }`}
+              >
+                Community
+                {currentTab === 'community' && (
+                  <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#ffb77d] shadow-[0_0_8px_#ff8c00]" />
+                )}
+              </button>
             </div>
           </div>
 
@@ -330,11 +344,19 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
           <button
             onClick={() => onTabChange('history')}
-            className={`text-xs py-1 px-2.5 rounded font-medium ${
+            className={`text-xs py-1 px-2 rounded font-medium ${
               currentTab === 'history' ? 'text-[#ffb77d] bg-[#ff8c00]/10 font-bold' : 'text-[#ddc1ae]'
             }`}
           >
             History
+          </button>
+          <button
+            onClick={() => onTabChange('community')}
+            className={`text-xs py-1 px-2 rounded font-medium ${
+              currentTab === 'community' ? 'text-[#ffb77d] bg-[#ff8c00]/10 font-bold' : 'text-[#ddc1ae]'
+            }`}
+          >
+            Community
           </button>
         </div>
       </nav>

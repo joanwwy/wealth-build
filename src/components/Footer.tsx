@@ -5,6 +5,7 @@ interface FooterProps {
   onOpenDocModal?: () => void;
   onOpenRiskModal?: () => void;
   onOpenApiStatusModal?: () => void;
+  onOpenCommunity?: () => void;
   onOpenLegalModal?: (title: string, type: 'privacy' | 'terms') => void;
 }
 
@@ -12,6 +13,7 @@ export const Footer: React.FC<FooterProps> = ({
   onOpenDocModal,
   onOpenRiskModal,
   onOpenApiStatusModal,
+  onOpenCommunity,
   onOpenLegalModal,
 }) => {
   return (
@@ -42,6 +44,12 @@ export const Footer: React.FC<FooterProps> = ({
             className="text-[#ffb77d] underline opacity-90 hover:opacity-100 transition-colors cursor-pointer"
           >
             Documentation
+          </button>
+          <button
+            onClick={onOpenCommunity}
+            className="text-[#ddc1ae]/80 hover:text-[#ffb77d] transition-colors opacity-90 hover:opacity-100 cursor-pointer"
+          >
+            Community Forum
           </button>
           <button
             onClick={onOpenRiskModal}

@@ -12,6 +12,7 @@ import { EducationScreen } from './components/EducationScreen';
 import { SimulatorScreen } from './components/SimulatorScreen';
 import { DashboardScreen } from './components/DashboardScreen';
 import { HistoryScreen } from './components/HistoryScreen';
+import { CommunityScreen } from './components/CommunityScreen';
 import { ExportModal, RiskModal, ApiStatusModal } from './components/Modals';
 
 export default function App() {
@@ -159,12 +160,18 @@ export default function App() {
             userSettings={userSettings}
           />
         )}
+
+        {currentTab === 'community' && <CommunityScreen />}
       </main>
 
       {/* Persistent Global Footer */}
       <Footer
         onOpenDocModal={() => {
           setCurrentTab('education');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+        onOpenCommunity={() => {
+          setCurrentTab('community');
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         onOpenRiskModal={() => setIsRiskOpen(true)}

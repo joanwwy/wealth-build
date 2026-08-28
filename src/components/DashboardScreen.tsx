@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { SimulationResult, UserSettings } from '../types';
 import { formatCurrency } from '../utils/simulationEngine';
+import { DisqusComments } from './DisqusComments';
 
 interface DashboardScreenProps {
   simulationResult: SimulationResult;
@@ -341,6 +342,13 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
           </table>
         </div>
       </section>
+
+      {/* Community Strategy Discussion (Disqus) */}
+      <DisqusComments
+        identifier={`model-${simulationResult.id}`}
+        title={`WealthBuilder Model: ${name}`}
+        categoryName={`Strategy Discussion for ${name} (${simulationResult.parameters.assetClass})`}
+      />
     </div>
   );
 };
