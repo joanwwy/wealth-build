@@ -1,4 +1,4 @@
-export type TabType = 'dashboard' | 'simulator' | 'education' | 'history' | 'community';
+export type TabType = 'simulator' | 'comparison' | 'community';
 
 export type AssetClassType = 
   | 'S&P 500 (100% Equity)'
@@ -28,6 +28,7 @@ export interface SimulationParameters {
   rebalancingFrequency: RebalanceFreq;
   startYear?: number;
   startAge?: number;
+  expectedReturnOverride?: number; // optional custom return %
   customAllocation?: CustomAllocation;
 }
 
@@ -41,6 +42,9 @@ export interface YearlyDataPoint {
   median: number;
   percentile10: number;
   percentile90: number;
+  // Comparative strategy data point when comparison is active
+  compareOptimizedValue?: number;
+  compareDelta?: number;
 }
 
 export interface MonthlyDataPoint {
@@ -51,6 +55,7 @@ export interface MonthlyDataPoint {
   optimizedValue: number;
   percentile10: number;
   percentile90: number;
+  compareOptimizedValue?: number;
 }
 
 export interface SimulationResult {
@@ -62,6 +67,7 @@ export interface SimulationResult {
   baselineFinalValue: number;
   totalROI: number;
   totalContributions: number;
+  totalGain: number;
   expectedCAGR: number;
   maxDrawdown: number;
   sharpeRatio: number;
@@ -70,8 +76,7 @@ export interface SimulationResult {
 }
 
 export interface UserSettings {
-  currency: 'USD' | 'EUR' | 'GBP' | 'JPY';
   startingAge: number;
-  inflationAdjusted: boolean;
-  theme: 'dark';
+  theme: 'light' | 'dark';
 }
+

@@ -89,7 +89,10 @@ export function calculateCompoundGrowth(
   return compoundPrincipal + futureSeries;
 }
 
-export function runSimulation(params: SimulationParameters): SimulationResult {
+export function runSimulation(
+  params: SimulationParameters,
+  compareParams?: SimulationParameters | null
+): SimulationResult {
   const profile = ASSET_CLASS_PROFILES[params.assetClass] || ASSET_CLASS_PROFILES['S&P 500 (100% Equity)'];
   
   // Rebalancing alpha bonus factor
@@ -99,16 +102,32 @@ export function runSimulation(params: SimulationParameters): SimulationResult {
     params.rebalancingFrequency === 'Monthly' ? 0.008 : 0;
 
   const baselineRate = profile.baselineReturn;
-  const optimizedRate = profile.optimizedReturn + rebalanceBonus;
+  const optimizedRate = params.expectedReturnOverride !== undefined
+    ? params.expectedReturnOverride / 100
+    : profile.optimizedReturn + rebalanceBonus;
 
-  const startYear = params.startYear || 2024;
-  const startAge = params.startAge || 35;
-  const horizon = Math.max(1, params.timeHorizon);
+  // Secondary compare profile if comparison is active
+  let compareRate: number | null = null;
+  let compareProfile = null;
+  if (compareParams) {
+    compareProfile = ASSET_CLASS_PROFILES[compareParams.assetClass] || ASSET_CLASS_PROFILES['Balanced (60/40)'];
+    const compRebalanceBonus = 
+      compareParams.rebalancingFrequency === 'Annually' ? 0.005 :
+      compareParams.rebalancingFrequency === 'Quarterly' ? 0.007 :
+      compareParams.rebalancingFrequency === 'Monthly' ? 0.008 : 0;
+    compareRate = compareParams.expectedReturnOverride !== undefined
+      ? compareParams.expectedReturnOverride / 100
+      : compareProfile.optimizedReturn + compRebalanceBonus;
+  }
+
+  const startYear = params.startYear || new Date().getFullYear();
+  const startAge = params.startAge || 30;
+  const horizon = Math.max(1, Math.min(50, Math.round(params.timeHorizon)));
 
   const yearlyData: YearlyDataPoint[] = [];
   const monthlyTrajectory: MonthlyDataPoint[] = [];
 
-  // Pre-generate monthly steps
+  // Pre-generate monthly steps for high-res trajectory
   const totalMonths = horizon * 12;
   for (let m = 0; m <= totalMonths; m++) {
     const yr = m / 12;
@@ -123,6 +142,16 @@ export function runSimulation(params: SimulationParameters): SimulationResult {
     const p10 = optVal * Math.exp(-1.28 * varianceFactor);
     const p90 = optVal * Math.exp(1.28 * varianceFactor);
 
+    let compVal: number | undefined = undefined;
+    if (compareParams && compareRate !== null) {
+      compVal = calculateCompoundGrowth(
+        compareParams.initialInvestment ?? params.initialInvestment,
+        compareRate,
+        yr,
+        compareParams.monthlyContribution ?? params.monthlyContribution
+      );
+    }
+
     monthlyTrajectory.push({
       month: m,
       year: currentYearNum,
@@ -130,11 +159,12 @@ export function runSimulation(params: SimulationParameters): SimulationResult {
       baselineValue: Math.round(baseVal),
       optimizedValue: Math.round(optVal),
       percentile10: Math.round(p10),
-      percentile90: Math.round(p90)
+      percentile90: Math.round(p90),
+      compareOptimizedValue: compVal !== undefined ? Math.round(compVal) : undefined,
     });
   }
 
-  // Generate yearly data steps (matching 4-year stepping if 16-20+ years, or annual)
+  // Generate yearly data steps
   for (let y = 0; y <= horizon; y++) {
     const currentYear = startYear + y;
     const currentAge = startAge + y;
@@ -148,6 +178,20 @@ export function runSimulation(params: SimulationParameters): SimulationResult {
     const p10 = optimizedVal * Math.exp(-1.28 * varianceFactor);
     const p90 = optimizedVal * Math.exp(1.28 * varianceFactor);
 
+    let compOptVal: number | undefined = undefined;
+    let compDeltaVal: number | undefined = undefined;
+    if (compareParams && compareRate !== null) {
+      compOptVal = Math.round(
+        calculateCompoundGrowth(
+          compareParams.initialInvestment ?? params.initialInvestment,
+          compareRate,
+          y,
+          compareParams.monthlyContribution ?? params.monthlyContribution
+        )
+      );
+      compDeltaVal = Math.round(optimizedVal - compOptVal);
+    }
+
     yearlyData.push({
       year: currentYear,
       age: currentAge,
@@ -157,7 +201,9 @@ export function runSimulation(params: SimulationParameters): SimulationResult {
       delta: Math.round(optimizedVal - baselineVal),
       median: Math.round(optimizedVal),
       percentile10: Math.round(p10),
-      percentile90: Math.round(p90)
+      percentile90: Math.round(p90),
+      compareOptimizedValue: compOptVal,
+      compareDelta: compDeltaVal,
     });
   }
 
@@ -165,10 +211,14 @@ export function runSimulation(params: SimulationParameters): SimulationResult {
   const projectedFinalValue = finalYearData.optimizedValue;
   const baselineFinalValue = finalYearData.baselineValue;
   const totalContributions = finalYearData.contributions;
+  const totalGain = Math.max(0, projectedFinalValue - totalContributions);
 
-  // Annualized CAGR
-  const totalROI = Number(((optimizedRate) * 100).toFixed(1));
-  const expectedCAGR = Number((optimizedRate * 100).toFixed(1));
+  // Return on Investment %
+  const totalROI = totalContributions > 0
+    ? Number(((totalGain / totalContributions) * 100).toFixed(1))
+    : 0;
+
+  const expectedCAGR = Number((optimizedRate * 100).toFixed(2));
 
   return {
     id: `sim_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
@@ -179,6 +229,7 @@ export function runSimulation(params: SimulationParameters): SimulationResult {
     baselineFinalValue,
     totalROI,
     totalContributions,
+    totalGain,
     expectedCAGR,
     maxDrawdown: profile.maxDrawdown,
     sharpeRatio: profile.sharpeRatio,
@@ -186,6 +237,28 @@ export function runSimulation(params: SimulationParameters): SimulationResult {
     monthlyTrajectory
   };
 }
+
+export function formatCurrency(
+  val: number,
+  compact = false,
+  currencySymbol = '$'
+): string {
+  if (isNaN(val) || val === null || val === undefined) return `${currencySymbol}0`;
+  if (compact) {
+    if (Math.abs(val) >= 1_000_000_000) {
+      return `${currencySymbol}${(val / 1_000_000_000).toFixed(2)}B`;
+    }
+    if (Math.abs(val) >= 1_000_000) {
+      return `${currencySymbol}${(val / 1_000_000).toFixed(2)}M`;
+    }
+    if (Math.abs(val) >= 1_000) {
+      return `${currencySymbol}${Math.round(val / 1_000)}K`;
+    }
+    return `${currencySymbol}${Math.round(val)}`;
+  }
+  return `${currencySymbol}${Math.round(val).toLocaleString('en-US')}`;
+}
+
 
 /**
  * Seed initial model matching "Q4 Model Alpha" from the reference screens
@@ -206,8 +279,9 @@ export const SEED_Q4_MODEL: SimulationResult = {
   },
   projectedFinalValue: 2400000,
   baselineFinalValue: 1850000,
-  totalROI: 14.2,
+  totalROI: 380.0,
   totalContributions: 500000,
+  totalGain: 1900000,
   expectedCAGR: 12.4,
   maxDrawdown: -22.8,
   sharpeRatio: 1.42,
@@ -254,8 +328,9 @@ export const PRESET_MODELS: SimulationResult[] = [
     },
     projectedFinalValue: 1620000,
     baselineFinalValue: 1310000,
-    totalROI: 9.4,
+    totalROI: 219.5,
     totalContributions: 507000,
+    totalGain: 1113000,
     expectedCAGR: 9.2,
     maxDrawdown: -14.2,
     sharpeRatio: 1.58,
@@ -284,8 +359,9 @@ export const PRESET_MODELS: SimulationResult[] = [
     },
     projectedFinalValue: 3180000,
     baselineFinalValue: 2240000,
-    totalROI: 14.8,
+    totalROI: 324.0,
     totalContributions: 750000,
+    totalGain: 2430000,
     expectedCAGR: 14.8,
     maxDrawdown: -32.4,
     sharpeRatio: 1.34,
@@ -300,15 +376,3 @@ export const PRESET_MODELS: SimulationResult[] = [
   }
 ];
 
-export function formatCurrency(val: number, compact = false, currency = '$'): string {
-  if (compact) {
-    if (Math.abs(val) >= 1_000_000) {
-      return `${currency}${(val / 1_000_000).toFixed(1)}M`;
-    }
-    if (Math.abs(val) >= 1_000) {
-      return `${currency}${Math.round(val / 1_000)}K`;
-    }
-    return `${currency}${Math.round(val)}`;
-  }
-  return `${currency}${val.toLocaleString('en-US')}`;
-}
