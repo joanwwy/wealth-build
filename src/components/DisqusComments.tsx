@@ -30,44 +30,60 @@ export const DisqusComments: React.FC<DisqusCommentsProps> = ({
     url || (typeof window !== 'undefined' ? window.location.href : 'https://wealth-builder.app');
 
   useEffect(() => {
-    // Configure window.disqus_config
-    window.disqus_config = function () {
-      // @ts-ignore
-      this.page.url = currentUrl;
-      // @ts-ignore
-      this.page.identifier = identifier;
-      // @ts-ignore
-      this.page.title = title;
-    };
+    let isMounted = true;
 
-    if (window.DISQUS) {
-      // If Disqus is already loaded, reset and reload the thread
-      try {
-        window.DISQUS.reset({
-          reload: true,
-          config: function () {
-            // @ts-ignore
-            this.page.url = currentUrl;
-            // @ts-ignore
-            this.page.identifier = identifier;
-            // @ts-ignore
-            this.page.title = title;
-          },
-        });
-      } catch (err) {
-        console.warn('Disqus reset error:', err);
+    try {
+      // Configure window.disqus_config
+      window.disqus_config = function () {
+        // @ts-ignore
+        this.page.url = currentUrl;
+        // @ts-ignore
+        this.page.identifier = identifier;
+        // @ts-ignore
+        this.page.title = title;
+      };
+
+      if (window.DISQUS) {
+        // If Disqus is already loaded, reset and reload the thread
+        try {
+          window.DISQUS.reset({
+            reload: true,
+            config: function () {
+              // @ts-ignore
+              this.page.url = currentUrl;
+              // @ts-ignore
+              this.page.identifier = identifier;
+              // @ts-ignore
+              this.page.title = title;
+            },
+          });
+        } catch (err) {
+          console.warn('Disqus reset error:', err);
+        }
+      } else {
+        // Check if script already exists to avoid duplication
+        const existingScript = document.querySelector('script[src*="wealth-builder.disqus.com/embed.js"]');
+        if (!existingScript) {
+          const d = document;
+          const s = d.createElement('script');
+          s.src = 'https://wealth-builder.disqus.com/embed.js';
+          s.setAttribute('data-timestamp', String(+new Date()));
+          s.async = true;
+          s.onerror = (e) => {
+            if (isMounted) {
+              console.warn('Disqus embed could not be loaded (e.g. adblocker or network):', e);
+            }
+          };
+          (d.head || d.body).appendChild(s);
+        }
       }
-    } else {
-      // Check if script already exists to avoid duplication
-      const existingScript = document.querySelector('script[src*="wealth-builder.disqus.com/embed.js"]');
-      if (!existingScript) {
-        const d = document;
-        const s = d.createElement('script');
-        s.src = 'https://wealth-builder.disqus.com/embed.js';
-        s.setAttribute('data-timestamp', String(+new Date()));
-        (d.head || d.body).appendChild(s);
-      }
+    } catch (e) {
+      console.warn('Error configuring Disqus:', e);
     }
+
+    return () => {
+      isMounted = false;
+    };
   }, [identifier, currentUrl, title]);
 
   return (
